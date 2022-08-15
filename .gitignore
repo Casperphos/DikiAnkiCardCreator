@@ -1,0 +1,5 @@
+.vscode/settings.json
+__pycache__/create_cards_and_export_csv.cpython-39.pyc
+__pycache__/DikiParser.cpython-39.pyc
+test/__pycache__/test_generate_cards.cpython-39-pytest-7.1.2.pyc
+test/__pycache__/test_generate_cards_01.cpython-39-pytest-7.1.2.pyc
