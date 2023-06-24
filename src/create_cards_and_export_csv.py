@@ -16,7 +16,7 @@ def generate_cards(optional_path=None):
     diki_parser = DikiParser.DikiParser()
     path_to_file = initialize_files(optional_path)
 
-    with open(path_to_file, 'r') as f:
+    with open(path_to_file, "r") as f:
         diki_parser.parsing_total = len(f.readlines())
 
     pages = get_url_list_from_file_containing_webpages(path_to_file)
@@ -42,12 +42,12 @@ def generate_cards(optional_path=None):
 
 
 def generate_csv(diki_parser, pages):
-    csv_headers = 'Expression;Meaning;Reading\n'
+    csv_headers = "Expression;Meaning;Reading\n"
 
     if os.path.exists("anki_cards.csv"):
         os.remove("anki_cards.csv")
 
-    with open('anki_cards.csv', 'a', encoding="utf-8") as f:
+    with open("anki_cards.csv", "a", encoding="utf-8") as f:
         f.write(csv_headers)
 
     for page in pages:
@@ -55,9 +55,11 @@ def generate_csv(diki_parser, pages):
         diki_parser.parse_page()
         time.sleep(2)
 
-        print(f"\nParsing page: "
-              f"{diki_parser.page_url} "
-              f"[{diki_parser.parsing_fail + diki_parser.parsing_ok}/{diki_parser.parsing_total}]")
+        print(
+            f"\nParsing page: "
+            f"{diki_parser.page_url} "
+            f"[{diki_parser.parsing_fail + diki_parser.parsing_ok}/{diki_parser.parsing_total}]"
+        )
 
         if not diki_parser.parsed_page:
             print(f"Couldn't parse {diki_parser.page_url}.")
@@ -65,23 +67,22 @@ def generate_csv(diki_parser, pages):
 
         expression_list = diki_parser.get_expression_list()
         meaning_list = diki_parser.get_meaning_list()
-        reading_list = get_images_from_reading_list(
-            diki_parser.get_reading_list())
+        reading_list = get_images_from_reading_list(diki_parser.get_reading_list())
 
         if not expression_list:
-            expression_list = ['NO_EXPRESSIONS_FOUND']
+            expression_list = ["NO_EXPRESSIONS_FOUND"]
 
         if not meaning_list:
-            meaning_list = ['NO_MEANINGS_FOUND']
+            meaning_list = ["NO_MEANINGS_FOUND"]
 
         if not reading_list:
-            reading_list = ['']     # No reading is OK
+            reading_list = [""]  # No reading is OK
 
-        expressions = " | ".join(expression_list) + ';'
-        meanings = "\"" + "\n".join(meaning_list) + "\"" + ';'
-        readings = " ".join(reading_list) + '\n'
+        expressions = " | ".join(expression_list) + ";"
+        meanings = '"' + "\n".join(meaning_list) + '"' + ";"
+        readings = " ".join(reading_list) + "\n"
 
-        with open('anki_cards.csv', 'a', encoding="utf-8") as f:
+        with open("anki_cards.csv", "a", encoding="utf-8") as f:
             f.write(expressions)
             f.write(meanings)
             f.write(readings)
@@ -89,7 +90,7 @@ def generate_csv(diki_parser, pages):
 
 def strip_file(file):
     export = ""
-    with open(file, 'r') as f:
+    with open(file, "r") as f:
         for line in f:
             if not line.isspace():
                 export += line
@@ -97,28 +98,28 @@ def strip_file(file):
     with open(file, "w") as f:
         f.write(export)
 
+
 ###########
 # File IO #
 ###########
 
 
 def initialize_files(optional_path=None):
-    if os.path.isdir('anki_media'):
+    if os.path.isdir("anki_media"):
         print("Found anki_media folder. Cleaning...")
-        shutil.rmtree('anki_media')
+        shutil.rmtree("anki_media")
 
-    os.mkdir('anki_media')
+    os.mkdir("anki_media")
     print("Created directory anki_media.")
 
     if optional_path:
         path_to_file = optional_path
 
-    if os.path.isfile('_dk.txt') and os.path.getsize('_dk.txt') and not optional_path:
+    if os.path.isfile("_dk.txt") and os.path.getsize("_dk.txt") and not optional_path:
         print("Found file _dk.txt. Omitting input...")
-        path_to_file = '_dk.txt'
+        path_to_file = "_dk.txt"
     elif not optional_path:
-        path_to_file = input(
-            "Please input path to file containing diki.pl webpages: ")
+        path_to_file = input("Please input path to file containing diki.pl webpages: ")
 
     if not os.path.isfile(path_to_file) or not os.path.getsize(path_to_file):
         print("File doesn't exist or path to file is wrong.")
@@ -132,10 +133,10 @@ def get_url_list_from_file_containing_webpages(path_to_file):
         print("File doesn't exist.")
         return None
 
-    with open(path_to_file, 'r') as f:
+    with open(path_to_file, "r") as f:
         file_lines = f.read().splitlines()
 
-    r = re.compile(r'www\.diki\.pl')
+    r = re.compile(r"www\.diki\.pl")
 
     for line in file_lines:
         match = re.search(r, line)
@@ -145,7 +146,7 @@ def get_url_list_from_file_containing_webpages(path_to_file):
             return None
 
     file_lines_seen = set()
-    with open(path_to_file, 'r') as f:
+    with open(path_to_file, "r") as f:
         for line in file_lines:
             if line in file_lines_seen:
                 print("File contains duplicate lines.")
@@ -154,6 +155,7 @@ def get_url_list_from_file_containing_webpages(path_to_file):
             file_lines_seen.add(line)
 
     return file_lines
+
 
 ####################
 # Image downloader #
@@ -173,7 +175,7 @@ def get_images_from_reading_list(reading_list):
         image = re.search(r, image)
 
         save_image_from_url(image_url, image.group())
-        image_list.append(f"<img src=\"{image.group()}\">")
+        image_list.append(f'<img src="{image.group()}">')
 
     return image_list
 
@@ -181,6 +183,6 @@ def get_images_from_reading_list(reading_list):
 def save_image_from_url(image_url, image_name):
     image_data = requests.get(image_url).content
 
-    with open('./anki_media/' + image_name, 'wb') as handler:
+    with open("./anki_media/" + image_name, "wb") as handler:
         handler.write(image_data)
         print(f"Downloaded img: {image_name}")
